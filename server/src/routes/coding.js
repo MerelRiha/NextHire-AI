@@ -1,0 +1,5 @@
+import express from 'express'; import {auth} from '../middleware/auth.js'; import {problems,evaluateCode} from '../services/coding.js'; import CodingSubmission from '../models/CodingSubmission.js'; const r=express.Router();
+r.get('/problems',auth,(req,res)=>res.json({problems:problems.map(({starter,...p})=>p)}));
+r.get('/problems/:id',auth,(req,res)=>{const p=problems.find(x=>x.id===req.params.id);if(!p)return res.status(404).json({message:'Problem not found'});res.json({problem:p})});
+r.post('/submissions',auth,async(req,res)=>{const {problemId,language,code}=req.body;const p=problems.find(x=>x.id===problemId);if(!p)return res.status(404).json({message:'Problem not found'});const result=evaluateCode(p,language,code);const doc=await CodingSubmission.create({user:req.user.id,problemId,problemTitle:p.title,language,code,status:result.status,score:result.score,feedback:result.feedback});res.json({submission:doc,result});});
+r.get('/history',auth,async(req,res)=>res.json({items:await CodingSubmission.find({user:req.user.id}).sort({createdAt:-1}).limit(30)})); export default r;

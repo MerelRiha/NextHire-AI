@@ -1,0 +1,13 @@
+{
+  "name": "nexthire-ai",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}
